@@ -1,0 +1,2 @@
+Simple boolean algebra calculator
+
