@@ -1,20 +1,20 @@
 #include "include/parser.h"
 
-Token *tk_c;
-
-Input *new_input(char *in)
+ParseData *prsdt_new(char *in)
 {
-    Input *input = malloc(sizeof(Input));
+    ParseData *dt = malloc(sizeof(ParseData));
 
-    input->in = in;
-    input->pos = 0;
+    dt->in = in;
+    dt->pos = 0;
+    dt->tk_c = get_token(dt);
+    dt->st = st_new();
 
-    return input;
+    return dt;
 }
 
 void test_lexer(char *input)
 {
-    Input *dt = new_input(input);
+    ParseData *dt = prsdt_new(input);
     Token *tk;
 
     while((tk = get_token(dt))->id != END)
@@ -26,7 +26,7 @@ void test_lexer(char *input)
     free(dt);
 }
 
-Token *get_token(Input *dt)
+Token *get_token(ParseData *dt)
 {
     char *current;
     Token *tk;
@@ -40,8 +40,8 @@ Token *get_token(Input *dt)
             case '&': { dt->pos++; return new_token(AND, '&'); } 
             case '|': { dt->pos++; return new_token(OR, '|');  } 
             case '^': { dt->pos++; return new_token(XOR, '^'); } 
-            case ')': { dt->pos++; return new_token(LPAREN, '('); } 
-            case '(': { dt->pos++; return new_token(RPAREN, ')'); } 
+            case '(': { dt->pos++; return new_token(LPAREN, '('); } 
+            case ')': { dt->pos++; return new_token(RPAREN, ')'); } 
             case '\0':{ dt->pos++; return new_token(END, '.'); }
             default: { break; }
         }
@@ -60,60 +60,67 @@ Token *get_token(Input *dt)
     return tk; 
 }
 
-void devour(Input *src, int tk_id)
+void devour(ParseData *src, int tk_id)
 {
-    if(tk_c->id == tk_id)
-        tk_c = get_token(src);
+    if(src->tk_c->id == tk_id)
+        src->tk_c = get_token(src);
     else exit(1); // error to be implemented
 }
 
 AST *parse(char *in)
 {
-    Input *src = new_input(in);
-    tk_c = get_token(src);
+    ParseData *src = prsdt_new(in);
     AST *tree = expr(src);
-    printf("%d", tree->token->id);
     print_tree(tree, 0);
     delete_tree(tree);
     return NULL;
 }
 
-AST *expr(Input *src)
+AST *expr(ParseData *src)
 {
-    AST *root = malloc(sizeof(AST));
-    root->ln = terminal(src);
+    AST *root, *new_node;
+    root = terminal(src);
 
-    while(tk_c->id >= AND || tk_c->id <= XOR)
+    while((src->tk_c->id >= AND || src->tk_c->id <= XOR)
+            && (src->tk_c->id != END && src->tk_c->id != RPAREN))
     {
-        root->token = tk_c;
-        devour(src, tk_c->id);
+        new_node = new_tree();
+        new_node->token = src->tk_c;
+        devour(src, src->tk_c->id);
+        new_node->ln = root;
+        root = new_node;
         root->rn = terminal(src);
     }
 
     return root;
 }   
 
-AST *terminal(Input *src)
+AST *terminal(ParseData *src)
 {
-    AST *node = malloc(sizeof(AST));
+    AST *node;
 
-    switch(tk_c->id)
+    switch(src->tk_c->id)
     {
-        case VAR: { node->token = tk_c;
+        case VAR: { node = new_tree();
+                    node->token = src->tk_c;
+                    st_insert(src->st, src->tk_c->var_name);
                     devour(src, VAR);
-                    break;
+                    return node;
                   }
-        case NOT: { node->token = tk_c;
+        case NOT: { node = new_tree();
+                    node->token = src->tk_c;
+                    devour(src, NOT);
                     node->ln = terminal(src);
-                    break;
+                    return node;
                   }
         case LPAREN:{ devour(src, LPAREN);     
                       node = expr(src);
                       devour(src, RPAREN);
-                      break;
+                      return node;
                     }
-        default: printf("here");exit(1);
+        case END:   printf("hi"); break;
+        default: print_token(src->tk_c);printf("here");exit(1);
     }
     
-    return node;
+    return NULL;
 }

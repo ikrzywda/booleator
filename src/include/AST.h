@@ -16,7 +16,7 @@ struct AST
     Token *token;
 };
 
-AST *new_tree(AST *l, AST *r, Token *t);
+AST *new_tree();
 
 void delete_tree(AST *t);
 

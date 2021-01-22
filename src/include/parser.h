@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include "AST.h"
+#include "symtab.h"
 #include "token.h"
 
 #include <stdio.h>
@@ -9,26 +10,28 @@
 #include <string.h>
 #include <ctype.h>
 
-typedef struct Input Input;
+typedef struct ParseData ParseData;
 
-struct Input
+struct ParseData
 {
     char *in;
     unsigned pos;
+    Token *tk_c;    
+    Symtab *st;
 };
 
-Input *new_input(char *dt);
+ParseData *prsdt_new(char *dt);
 
 void test_lexer(char *input);
 
-Token *get_token(Input *input);
+Token *get_token(ParseData *input);
 
-void devour(Input *src, int tk_id);
+void devour(ParseData *src, int tk_id);
 
 AST *parse(char *in);
 
-AST *expr(Input *src);
+AST *expr(ParseData *src);
 
-AST *terminal(Input *src);
+AST *terminal(ParseData *src);
 
 #endif
