@@ -1,37 +1,27 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+#include "lexer.h"
 #include "AST.h"
-#include "symtab.h"
-#include "token.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 
-typedef struct ParseData ParseData;
+typedef struct Parser Parser;
 
-struct ParseData
+struct Parser
 {
-    char *in;
-    unsigned pos;
-    Token *tk_c;    
-    Symtab *st;
+    Lexer *lex;
+    Token *tk;
 };
 
-ParseData *prsdt_new(char *dt);
+Parser *prs_new(Lexer *lex);
 
-void test_lexer(char *input);
+AST *prs_parse(Parser *prs);
 
-Token *get_token(ParseData *input);
+AST *prs_expr(Parser *prs);
 
-void devour(ParseData *src, int tk_id);
+AST *prs_prmtv(Parser * prs);
 
-AST *parse(char *in);
-
-AST *expr(ParseData *src);
-
-AST *terminal(ParseData *src);
+void prs_eat(Parser *prs);
 
 #endif

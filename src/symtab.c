@@ -1,73 +1,50 @@
 #include "include/symtab.h"
 
-Map *map_new()
+Map *map_new(char sym, char offset)
 {
-    Map *m = malloc(sizeof(Map));
-    m->ln = m->rn = NULL;
-    return m;
+    Map *map = malloc(sizeof(Map));
+
+    map->ln = NULL;
+    map->sym = sym;
+    map->offset = offset;
+    map->rn = NULL;
+
+    return map;
 }
 
-Map *map_search(Map *tgt, char sym)
+Map *map_new_empty()
 {
-    if(tgt == NULL) return NULL;
+    Map *map = malloc(sizeof(Map));
 
-    if(sym < tgt->sym)
-        return map_search(tgt->ln, sym);
-    else
-        return map_search(tgt->rn, sym);
+    map->ln = NULL;
+    map->rn = NULL;
+
+    return map;
 }
 
-// implement self-balancing tree
-
-int map_insert(Map *tgt, char sym, int offset)
+void map_free(Map *map)
 {
-    if(map_search(tgt, sym) == NULL) return 0;
+    if(map == NULL) return;
+
+    map_free(map->ln);
+    map_free(map->rn);
+    free(map);
+}
+
+char map_lookup(Map *map, char sym)
+{
+    if(map == NULL) return -1;
     
-    if(tgt->sym < sym)
-    {
-        if(tgt->ln == NULL)
-        {
-            tgt->ln = map_new();
-            tgt->ln->sym = sym;
-            tgt->ln->offset = offset;
-            return 1;
-        }
-        map_insert(tgt->ln, sym, offset);
-    }
-    else
-    {
-        if(tgt->rn == NULL)
-        {
-            tgt->rn = map_new();
-            tgt->rn->sym = sym;
-            tgt->rn->offset = offset;
-            return 1;
-        }
-        map_insert(tgt->rn, sym, offset);
-    }
-
-    return 0;
+    if(map->sym == sym) return map->offset;
+    else if(sym < map->sym) return map_lookup(map->ln, sym);
+    else return map_lookup(map->rn, sym);
 }
 
-Symtab *st_new()
+void map_insert(Map *map, char sym, char offset)
 {
-    Symtab *s = malloc(sizeof(Symtab)); 
+    if(map == NULL) map = map_new(sym, offset); 
 
-    s->symbols = map_new();
-    s->values = 0;
-    s->size = 0;
-
-    return s;
-}
-
-void st_insert(Symtab *tgt, char sym)
-{
-    if(!map_insert(tgt->symbols, sym, tgt->size))
-        tgt->size++;
-}
-
-int st_lookup(Symtab *src, char sym)
-{
-    int pos = map_search(src->symbols, sym)->val;
-    return (src->values & (1 << pos)) > 0 ? 1 : 0; 
+    if(map->sym < sym) map_insert(map->ln, sym, offset);
+    else if(map->sym > sym) map_insert(map->rn, sym, offset);
+    else if(map->sym == sym) return;
 }

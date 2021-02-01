@@ -1,32 +1,32 @@
 #include "include/AST.h"
 
-AST *new_tree(AST *l, AST *r, Token *t)
+AST *ast_new(AST *ln, AST *rn, Token *tk)
 {
-    AST *tree = malloc(sizeof(AST));
-    
-    tree->ln = NULL;
-    tree->rn = NULL;
-    tree->token = NULL;
+    AST *ast = malloc(sizeof(AST));
 
-    return tree;
+    ast->ln = ln;
+    ast->rn = rn;
+    ast->tk = tk;
+
+    return ast;
 }
 
-void delete_tree(AST *t)
+AST *ast_new_empty()
 {
-    if(t == NULL) return;
+    AST *ast = malloc(sizeof(AST));
 
-    delete_tree(t->ln);
-    delete_tree(t->rn);
+    ast->ln = NULL;
+    ast->rn = NULL;
 
-    free(t->token);
-    free(t);
+    return ast;
 }
 
-void print_tree(AST *t, unsigned offset)
+void ast_free(AST *ast)
 {
-    if(t == NULL) return;
-    
-    print_token(t->token);
-    print_tree(t->ln, offset+4); 
-    print_tree(t->rn, offset+4); 
+    if(ast == NULL) return;
+
+    ast_free(ast->ln);
+    ast_free(ast->rn);
+    free(ast);
 }
+

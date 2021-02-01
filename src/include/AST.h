@@ -1,11 +1,10 @@
 #ifndef AST_H
 #define AST_H
-
+   
 #include "token.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct AST AST;
 
@@ -13,13 +12,13 @@ struct AST
 {
     AST *ln;
     AST *rn;
-    Token *token;
+    Token *tk;
 };
 
-AST *new_tree();
+AST *ast_new(AST *ln, AST *rn, Token *tk);
 
-void delete_tree(AST *t);
+AST *ast_new_empty();
 
-void print_tree(AST *t, unsigned offset);
+void ast_free(AST *ast);
 
 #endif

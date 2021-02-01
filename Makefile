@@ -1,4 +1,4 @@
-cln:
+build:
 	gcc -o bootor src/*.c
-sanitize:
-	gcc -o bootor -fsanitize=address src/*.c
+debug:
+	gcc -o bootor -fsanitize=address -Wpadded src/*.c

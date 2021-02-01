@@ -1,23 +1,15 @@
 #ifndef BTOR_H
 #define BTOR_H
 
-#include "parser.h"
-#include "symtab.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct BtorData BtorData;
+void run();
 
-struct BtorData
-{
-    AST *tree;
-    Symtab *st;
-};
+void compute(char *buffer);
 
-BtorData *btd_new(AST *tree, Symtab *st);
+char *get_buffer_cli();
 
-void btor_run(BtorData *dt);
-
-unsigned btor_compute(BtorData *dt, unsigned key);
-
-void print_row(unsigned val);
+char *get_buffer_file(char *fpath);
 
 #endif

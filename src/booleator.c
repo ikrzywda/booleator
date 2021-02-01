@@ -1,29 +1,45 @@
 #include "include/booleator.h"
 
-BtorData *btd_new(AST *tree, Symtab *st)
-{
-    BtorData *btd = malloc(sizeof(BtorData));
-    
-    btd->tree = tree;
-    btd->st = st;
+const unsigned INPUT_WIDTH = 51;
 
-    return btd;
-}
+const char WELCOME_MSG[] = "Welcome to Booleator - a simple boolean algebra calculator\n\
+type in an expression to get table of results\n\
+'~' - NOT\n\
+'&' - AND\n\
+'|' - OR\n\
+'^' - XOR\n\0";
 
-void btor_run(BtorData *dt)
+void run()
 {
-    int key = dt->st->size;
-    
-    while(key >= 0)
+    printf("%s", WELCOME_MSG);
+
+    while(1)
     {
-        print_row(btor_compute(dt, key));
-        key--;
+        printf("\n>>> ");
+        compute(get_buffer_cli());
     }
 }
 
-unsigned btor_compute(BtorData *dt, unsigned key)
+void compute(char *buffer)
 {
-     
+    printf("%s", buffer);
+    free(buffer);
 }
 
-void print_row(unsigned val);
+char *get_buffer_cli()
+{
+    char *buffer = malloc(INPUT_WIDTH);
+    char i = 0, c;
+    
+    while(i < (INPUT_WIDTH - 1) 
+          && (c = getchar()) != '\n')
+    {
+        *(buffer + i) = c;
+        ++i;
+    }
+    
+    *(buffer + INPUT_WIDTH - 1) = '\0';
+
+    return buffer;
+}
+

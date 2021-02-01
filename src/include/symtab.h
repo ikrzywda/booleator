@@ -1,41 +1,24 @@
 #ifndef SYMTAB_H
 #define SYMTAB_H
 
-#include "AST.h"
-
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 typedef struct Map Map;
 
 struct Map
 {
-    Map *ln;
-    Map *rn;
-    char sym;
-    unsigned val, offset;
+    Map *ln, *rn;
+    char sym, offset;
 };
 
-Map *map_new();
+Map *map_new(char sym, char offset);
 
-Map *map_search(Map *tgt, char sym);
+Map *map_new_empty();
 
-int map_insert(Map *tgt, char sym, int offset);
+void map_free(Map *map);
 
-typedef struct Symtab Symtab;
+char map_lookup(Map *map, char sym);
 
-struct Symtab
-{
-    unsigned size;
-    Map *symbols;
-    unsigned values;
-};
-
-Symtab *st_new();
-
-void st_insert(Symtab *tgt, char sym);
-
-int st_lookup(Symtab *src, char sym);
+void map_insert(Map *map, char sym, char offset);
 
 #endif
