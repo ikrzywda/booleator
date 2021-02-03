@@ -5,7 +5,8 @@
 
 enum ids
 {
-    NOT, AND, OR, XOR, VAR, END
+    NOT, AND, OR, XOR, VAR, 
+    LPN, RPN, END
 };
 
 typedef struct Token Token;

@@ -11,10 +11,13 @@ typedef struct Parser Parser;
 struct Parser
 {
     Lexer *lex;
-    Token *tk;
+    Token *tk_c;
 };
 
-Parser *prs_new(Lexer *lex);
+
+Parser *prs_new(char *buffer);
+
+void prs_eat(Parser *prs, int tk_id);
 
 AST *prs_parse(Parser *prs);
 
@@ -22,6 +25,5 @@ AST *prs_expr(Parser *prs);
 
 AST *prs_prmtv(Parser * prs);
 
-void prs_eat(Parser *prs);
 
 #endif

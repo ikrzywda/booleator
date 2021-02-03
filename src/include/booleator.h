@@ -1,6 +1,11 @@
 #ifndef BTOR_H
 #define BTOR_H
 
+#include "AST.h"
+#include "token.h"
+#include "parser.h"
+#include "lexer.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 

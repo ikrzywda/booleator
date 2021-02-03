@@ -22,7 +22,10 @@ void run()
 
 void compute(char *buffer)
 {
-    printf("%s", buffer);
+    Parser *p = prs_new(buffer);
+    AST *tree = prs_parse(p);
+
+    printf("%p\n%s", tree, buffer);
     free(buffer);
 }
 
